@@ -34,7 +34,13 @@ const Header = () => {
 
   const handleMenuClick = ({ key }) => {
     if (key === 'update') {
-      navigate('/update-account');
+      if (key === 'update') {
+  if (host) {
+    navigate('/host-update');
+  } else {
+    navigate('/update-account');
+  }
+};
     } else if (key === 'logout') {
       localStorage.clear();
       setUser(null);
@@ -130,14 +136,19 @@ const Header = () => {
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-around', paddingTop: 20 }}>
-          <Button type="primary" onClick={handleClientLogin}>
-            Login as Client
-          </Button>
-          <Button type="default" onClick={handleHostLogin}>
-            Login as Host
-          </Button>
-        </div>
+        <div className="login-role-selection">
+  <div className="login-card" onClick={handleClientLogin}>
+   
+    <h3>Client</h3>
+    <p>Book your favorite events and manage your bookings.</p>
+  </div>
+
+  <div className="login-card" onClick={handleHostLogin}>
+    
+    <h3>Host</h3>
+    <p>Create and manage your events with powerful tools.</p>
+  </div>
+</div>
       </Modal>
     </>
   );

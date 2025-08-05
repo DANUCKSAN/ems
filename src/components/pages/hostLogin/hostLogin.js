@@ -1,9 +1,13 @@
+// src/components/pages/hostLogin/HostLogin.js
 import React, { useState } from 'react';
 import { Form, Input, Button, message } from 'antd';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import './HostLogin.css';
+import logo from '../../../assets/logo.svg';
 
 const HostLogin = () => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const onFinish = async ({ email, password }) => {
     setLoading(true);
@@ -22,9 +26,11 @@ const HostLogin = () => {
       const data = await response.json();
       message.success('Login successful!');
       localStorage.setItem('host', JSON.stringify(data));
+      window.dispatchEvent(new Event('storage'));
+
       setTimeout(() => {
-        window.location.href = '/'; // or `/host-dashboard`
-      }, 1000);
+        navigate('/');
+      }, 1500);
     } catch (error) {
       message.error(`Login failed: ${error.message}`);
     }
@@ -32,53 +38,50 @@ const HostLogin = () => {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 420,
-        margin: '60px auto',
-        padding: '32px',
-        background: '#fff',
-        borderRadius: 12,
-        boxShadow: '0 0 12px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-      }}
-    >
-      <h2 style={{ marginBottom: 24 }}>Host Login</h2>
+    <div className="login-wrapper">
+      <div className="login-left">
+        <img src={logo} alt="Logo" className="login-logo" />
+        <h1>Welcome, Host!</h1>
+        <p>Access your dashboard, manage events, and connect with your audience.</p>
+      </div>
 
-      <Form onFinish={onFinish} layout="vertical">
-        <Form.Item
-          name="email"
-          label="Email"
-          rules={[
-            { required: true, message: 'Please input your email!' },
-            { type: 'email', message: 'Please enter a valid email!' },
-          ]}
+      <div className="login-right">
+        <Form
+          name="host-login"
+          onFinish={onFinish}
+          layout="vertical"
+          className="login-form"
         >
-          <Input placeholder="Enter your email" />
-        </Form.Item>
+          <h2>Host Login</h2>
 
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password placeholder="Enter your password" />
-        </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: 'Please enter your email!' },
+              { type: 'email', message: 'Enter a valid email address' },
+            ]}
+          >
+            <Input placeholder="Email" />
+          </Form.Item>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading} block>
-            Login
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item
+            name="password"
+            label="Password"
+            rules={[{ required: true, message: 'Please enter your password!' }]}
+          >
+            <Input.Password placeholder="Password" />
+          </Form.Item>
 
-      <div style={{ marginTop: 16 }}>
-        <p style={{ marginBottom: 4, color: '#555' }}>Need a host account?</p>
-        <Link to="/host-register">
-          <Button type="default" block>
-            Register as Host
-          </Button>
-        </Link>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading} block>
+              Login
+            </Button>
+            <div className="register-link">
+              Need an account? <Link to="/host-register">Register as Host</Link>
+            </div>
+          </Form.Item>
+        </Form>
       </div>
     </div>
   );
