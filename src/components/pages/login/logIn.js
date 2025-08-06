@@ -3,9 +3,9 @@ import React from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import './Login.css'; // 👈 CSS file
+import './Login.css';
 
-import logoImage from '../../../assets/logo.svg'; // ✅ make sure the logo is here
+import logoImage from '../../../assets/logo.svg';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,12 +19,18 @@ const Login = () => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText);
+        // Try to parse backend error message JSON
+        let errorMessage = 'Invalid email or password';
+        try {
+          const errorData = await response.json();
+          if (errorData.message) errorMessage = errorData.message;
+        } catch {
+          // Ignore parse errors
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      console.log('Login success:', data);
       localStorage.setItem('user', JSON.stringify(data));
       window.dispatchEvent(new Event('storage'));
       message.success('Login successful!');
@@ -34,7 +40,7 @@ const Login = () => {
       }, 1500);
     } catch (error) {
       console.error('Login failed:', error.message);
-      message.error('Failed to login: Wrong credentials');
+      message.error(String(error.message) || 'Invalid email or password');
     }
   };
 
@@ -43,7 +49,9 @@ const Login = () => {
       <div className="login-left">
         <img src={logoImage} alt="Logo" className="login-logo" />
         <h1>Welcome to EMS</h1>
-        <p>Event Management System to simplify client bookings and host event creation. Fast, Secure and Modern.</p>
+        <p>
+          Event Management System to simplify client bookings and host event creation. Fast, Secure and Modern.
+        </p>
       </div>
       <div className="login-right">
         <Form

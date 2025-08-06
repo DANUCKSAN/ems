@@ -1,9 +1,18 @@
-// src/components/pages/registration/register.js
+// src/components/pages/registration/Register.js
 import React from "react";
-import { Button, Checkbox, Form, Input, Select, message } from "antd";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  Select,
+  message,
+  Tooltip
+} from "antd";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import "./Register.css"; // 💡 Include this new CSS file
-import logo from "../../../assets/logo.svg"; // ✅ Adjust path if different
+import "./Register.css";
+import logo from "../../../assets/logo.svg";
 
 const { Option } = Select;
 
@@ -22,15 +31,15 @@ const Register = () => {
       });
 
       if (response.ok) {
-        message.success("🎉 Registration successful!");
+        message.success("🎉 Account created successfully! You can now login.");
         form.resetFields();
-        setTimeout(() => navigate("/login"), 1000);
+        setTimeout(() => navigate("/login"), 1200);
       } else {
         const errorData = await response.json();
         if (errorData.message?.includes("Email already in use")) {
           message.error("❗ This email is already registered.");
         } else {
-          message.error("Registration failed: " + (errorData.message || "Unknown error"));
+          message.error("❗ Registration failed: " + (errorData.message || "Unknown error"));
         }
       }
     } catch (error) {
@@ -67,7 +76,10 @@ const Register = () => {
           <Form.Item
             name="firstName"
             label="First Name"
-            rules={[{ required: true, message: "Please input your first name" }]}
+            rules={[
+              { required: true, message: "Please input your first name" },
+              { pattern: /^[A-Za-z]+$/, message: "First name must contain only letters" },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -75,7 +87,10 @@ const Register = () => {
           <Form.Item
             name="lastName"
             label="Last Name"
-            rules={[{ required: true, message: "Please input your last name" }]}
+            rules={[
+              { required: true, message: "Please input your last name" },
+              { pattern: /^[A-Za-z]+$/, message: "Last name must contain only letters" },
+            ]}
           >
             <Input />
           </Form.Item>
@@ -84,8 +99,8 @@ const Register = () => {
             name="email"
             label="E-mail"
             rules={[
-              { type: "email", message: "Invalid email format" },
               { required: true, message: "Please input your email!" },
+              { type: "email", message: "Invalid email format" },
             ]}
           >
             <Input />
@@ -93,9 +108,30 @@ const Register = () => {
 
           <Form.Item
             name="password"
-            label="Password"
-            rules={[{ required: true, message: "Please input your password!" }]}
+            label={
+              <span>
+                Password&nbsp;
+                <Tooltip
+                  title={
+                    <>
+                      • At least 8 characters<br />
+                      • 1 uppercase (A-Z), 1 lowercase (a-z)<br />
+                      • 1 number (0-9), 1 special character (!@#$...)
+                    </>
+                  }
+                >
+                  <InfoCircleOutlined />
+                </Tooltip>
+              </span>
+            }
             hasFeedback
+            rules={[
+              { required: true, message: "Please input your password!" },
+              {
+                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+                message: "Password must meet the requirements (A-Z, a-z, 0-9, special character, min 8 chars)",
+              },
+            ]}
           >
             <Input.Password />
           </Form.Item>
