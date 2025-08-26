@@ -104,39 +104,19 @@ const HostRegister = () => {
           </Form.Item>
 
           <Form.Item
-  name="dateOfBirth"
-  label={
-    <span>
-      Date of Birth&nbsp;
-      <Tooltip title="Host must be at least 18 years old">
-        <InfoCircleOutlined />
-      </Tooltip>
-    </span>
-  }
-  rules={[
-    { required: true, message: 'Please select your date of birth' },
-    () => ({
-      validator(_, value) {
-        if (!value) return Promise.resolve();
-        const age = moment().diff(value, 'years');
-        if (age >= 18) return Promise.resolve();
-        return Promise.reject(new Error('You must be at least 18 years old'));
-      },
-    }),
-  ]}
-  extra="Host must be at least 18 years old"
->
-  <DatePicker
-    style={{ width: '100%' }}
-    disabledDate={(current) =>
-      current && current > moment().subtract(18, 'years').endOf('day')
-    }
-    onFocus={() =>
-      message.info('⚠️ Host must be at least 18 years old to register.')
-    }
-  />
-</Form.Item>
-
+            name="dateOfBirth"
+            label={
+              <span>
+                Date of Birth&nbsp;
+                <Tooltip title="Host must be at least 18 years old">
+                  <InfoCircleOutlined />
+                </Tooltip>
+              </span>
+            }
+            rules={[{ required: true, message: 'Please select your date of birth' }]}
+          >
+            <DatePicker style={{ width: '100%' }} disabledDate={disabledDate} />
+          </Form.Item>
 
           <Form.Item
             name="eventCategory"

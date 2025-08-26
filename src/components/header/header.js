@@ -108,7 +108,7 @@ const Header = () => {
         </Link>
 
         <div className="tabs">
-          <Link to="/featured" className="tab">Featured Events</Link>
+          <Link to="/" className="tab">Featured Events</Link>
           <Link to="/music" className="tab">Music</Link>
           <Link to="/business" className="tab">Business</Link>
           <Link to="/education" className="tab">Educational</Link>

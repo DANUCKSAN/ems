@@ -1,6 +1,6 @@
-import React from "react";
-import "./Presentation.css";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import "./EventDetails.css";
 
 const events = [
   { id: 1, title: "Tech Summit 2025", date: "2025-09-01", description: "Join industry leaders for talks on AI, cloud computing, and innovation.", image: "https://picsum.photos/id/1015/400/250" },
@@ -25,31 +25,50 @@ const events = [
   { id: 20, title: "Tech Meetup", date: "2025-10-09", description: "Network with tech enthusiasts and learn about the latest gadgets.", image: "https://picsum.photos/id/1205/400/250" },
 ];
 
-
-
-
-export default function Presentation() {
+export default function EventDetails() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  return (
-    <div className="presentation">
-      <section className="hero">
-        <h1>Discover & Join Exciting Events</h1>
-        <p>Connect, explore, and experience the best events near you.</p>
-      </section>
+  const [event, setEvent] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("loggedIn") === "true"
+  );
 
-      <section className="event-grid">
-        {events.map((event) => (
-          <div className="event-card" key={event.id}>
-            <img src={event.image} alt={event.title} loading="lazy" />
-            <div className="event-content">
-              <h3>{event.title}</h3>
-              <p className="date">{event.date}</p>
-              <p>{event.description}</p>
-              <button onClick={() => navigate(`/event/${event.id}`)}>View Details</button>
-            </div>
-          </div>
-        ))}
-      </section>
+  useEffect(() => {
+    // Load the selected event
+    const foundEvent = events.find((e) => e.id === parseInt(id));
+    setEvent(foundEvent);
+
+    // Update login state if localStorage changes
+    const handleStorageChange = () => {
+      setIsLoggedIn(localStorage.getItem("loggedIn") === "true");
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [id]);
+
+  if (!event) return <h2 className="not-found">Event not found</h2>;
+
+  const handleAction = () => {
+    if (isLoggedIn) {
+      alert(`You have booked: ${event.title}`);
+    } else {
+      // Save the intended event page before redirecting to login
+      localStorage.setItem("redirectAfterLogin", `/event/${event.id}`);
+      navigate("/login");
+    }
+  };
+
+  return (
+    <div className="event-details">
+      <img src={event.image} alt={event.title} className="event-banner" />
+      <div className="event-info">
+        <h1>{event.title}</h1>
+        <p className="event-date">📅 {event.date}</p>
+        <p className="event-description">{event.description}</p>
+        <button className="action-btn" onClick={handleAction}>
+          {isLoggedIn ? "Book Now" : "Sign in to Book"}
+        </button>
+      </div>
     </div>
   );
 }

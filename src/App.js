@@ -15,6 +15,7 @@ import UpdateAccount from './components/pages/updateAccount/updateAccount';
 import HostLogin from './components/pages/hostLogin/hostLogin';
 import HostRegister from './components/pages/hostRegister/hostRegister';
 import HostUpdateAccount from './components/pages/hostUpdateAccount/hostUpdateAccount';
+import EventDetails from './components/pages/event-details/eventdetails';
 
 const { Content } = Layout;
 
@@ -53,6 +54,8 @@ const App = () => {
             <Route path="/host-login" element={<HostLogin />} />
             <Route path="/host-register" element={<HostRegister />} />
             <Route path="host-update" element={<HostUpdateAccount />} />
+             <Route path="/event/:id" element={<EventDetails />} />
+        
           </Routes>
         </Content>
       </Layout>

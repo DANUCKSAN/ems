@@ -2,48 +2,45 @@
 import React from 'react';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Login.css';
 
 import logoImage from '../../../assets/logo.svg';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get redirect path if coming from an event
+  const redirectAfterLogin = location.state?.redirectTo || '/';
 
   const onFinish = async (values) => {
-    try {
-      const response = await fetch('http://localhost:8080/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
+  try {
+    const response = await fetch("http://localhost:8080/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
 
-      if (!response.ok) {
-        // Try to parse backend error message JSON
-        let errorMessage = 'Invalid email or password';
-        try {
-          const errorData = await response.json();
-          if (errorData.message) errorMessage = errorData.message;
-        } catch {
-          // Ignore parse errors
-        }
-        throw new Error(errorMessage);
-      }
+    if (!response.ok) throw new Error("Invalid email or password");
 
-      const data = await response.json();
-      localStorage.setItem('user', JSON.stringify(data));
-      window.dispatchEvent(new Event('storage'));
-      message.success('Login successful!');
+    const data = await response.json();
+    localStorage.setItem("user", JSON.stringify(data));
+    localStorage.setItem("loggedIn", "true");
+    window.dispatchEvent(new Event("storage")); // Update EventDetails
 
-      setTimeout(() => {
-        navigate('/');
-      }, 1500);
-    } catch (error) {
-      console.error('Login failed:', error.message);
-      message.error(String(error.message) || 'Invalid email or password');
+    // Check if there was a redirect saved
+    const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
+    if (redirectAfterLogin) {
+      localStorage.removeItem("redirectAfterLogin");
+      navigate(redirectAfterLogin, { replace: true });
+    } else {
+      navigate("/", { replace: true }); // default page
     }
-  };
-
+  } catch (error) {
+    console.error(error);
+  }
+};
   return (
     <div className="login-container">
       <div className="login-left">
